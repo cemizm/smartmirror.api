@@ -1,0 +1,4 @@
+*.userprefs
+obj/
+*.csproj.user
+bin/
