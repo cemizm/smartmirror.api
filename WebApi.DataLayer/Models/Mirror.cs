@@ -7,10 +7,15 @@ namespace WebApi.DataLayer.Models
     {
         public Mirror() { }
 
-        /// <summary>
-        /// Id of the Mirror
-        /// </summary>
-        public Guid Id { get; set; }
+		/// <summary>
+		/// Id of the Mirror
+		/// </summary>
+		public Guid Id { get; set; }
+
+		/// <summary>
+		/// The User to which the Mirror belongs to
+		/// </summary>
+		public string User { get; set; }
 
         /// <summary>
         /// The Name of the Mirror used to display on administration operations.
