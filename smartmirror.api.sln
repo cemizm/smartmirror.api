@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.DataLayer.MongoDB", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EFC834C3-91B1-4044-80F5-64D21958B3DE}"
 	ProjectSection(SolutionItems) = preProject
-		README = README
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
