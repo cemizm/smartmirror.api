@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.DataLayer.Models;
 
 namespace WebApi.DataLayer
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetAll();
-        User GetByEmail(string email);
-        User GetByEmailPassword(string email, string password);
-        void Add(User user);
-        void Update(User user);
-        void Delete(string email);
+        Task<IEnumerable<User>> GetAll();
+        Task<User> GetByEmail(string email);
+        Task<User> GetByEmailPassword(string email, string password);
+        Task Add(User user);
+        Task Update(User user);
+        Task Delete(string email);
     }
 }
