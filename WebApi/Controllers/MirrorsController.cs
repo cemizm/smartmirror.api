@@ -9,7 +9,7 @@ using WebApi.DataLayer.Models;
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
-    public class MirrorsController : Controller
+    public class MirrorsController : BaseController
     {
         private IMirrorRepository repository;
 
@@ -21,7 +21,7 @@ namespace WebApi.Controllers
 		[HttpGet]
         public async Task<IActionResult> Get()
         {
-            var mirrors = await this.repository.GetAll(HttpContext.User.Identity.Name);
+            var mirrors = await this.repository.GetAll(UserEmail);
 
             return Ok(mirrors);
         }
@@ -31,8 +31,10 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
-            Mirror mirror = await this.repository.GetById(id);
+            if (id == Guid.Empty)
+                return BadRequest();
 
+            Mirror mirror = await this.repository.GetById(id);
             if (mirror == null)
                 return NotFound();
 
@@ -41,16 +43,39 @@ namespace WebApi.Controllers
 
 		// PUT api/mirrors
 		[HttpPut]
-        public async Task Put([FromBody]Mirror mirror)
-        {
-            await this.repository.Update(mirror);
+        public async Task<IActionResult> Put([FromBody]Mirror mirror)
+		{
+            if (mirror.Id == Guid.Empty)
+                return BadRequest();
+
+            Mirror existing = await this.repository.GetById(mirror.Id);
+			if (mirror == null)
+				return NotFound();
+
+			if (string.Compare(existing.User, UserEmail, StringComparison.CurrentCultureIgnoreCase) != 0)
+				return Unauthorized();
+
+            mirror.User = UserEmail;
+
+			await this.repository.Update(mirror);
+
+            return Ok();
         }
 
 		// DELETE api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
 		[HttpDelete("{id}")]
-        public async Task Delete(Guid id)
-        {
+        public async Task<IActionResult> Delete(Guid id)
+		{
+			Mirror mirror = await this.repository.GetById(id);
+			if (mirror == null)
+				return NotFound();
+
+            if (string.Compare(mirror.User, UserEmail, StringComparison.CurrentCultureIgnoreCase) != 0)
+                return Unauthorized();
+
             await this.repository.Delete(id);
+
+            return Ok();
         }
     }
 }

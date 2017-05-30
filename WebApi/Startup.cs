@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WebApi.DataLayer;
+using WebApi.Utils;
 
 namespace WebApi
 {
@@ -20,7 +23,7 @@ namespace WebApi
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            
+
             Configuration = builder.Build();
         }
 
@@ -30,10 +33,18 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(config =>
+			{
+                //Enable global authorization
+	            var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+	            config.Filters.Add(new AuthorizeFilter(policy));
+	        });
 
             // Add Configuration Settings
             services.Configure<DataLayer.MongoDB.Data.MongoSettings>(options => Configuration.GetSection("MongoConnection").Bind(options));
+            services.Configure<Utils.TokenSettings>(options => Configuration.GetSection("TokenSettings").Bind(options));
 
             // Add Dependencies
             services.AddTransient<IMirrorRepository, DataLayer.MongoDB.MirrorRepository>();
@@ -46,6 +57,11 @@ namespace WebApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            TokenSettings settings = new TokenSettings();
+            Configuration.GetSection("TokenSettings").Bind(settings);
+
+            app.UseTokenAuthentication(settings);
 
             app.UseMvc();
         }

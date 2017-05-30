@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.DataLayer;
 using WebApi.DataLayer.Models;
@@ -9,7 +10,7 @@ using WebApi.DataLayer.Models;
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
-    public class TicketsController : Controller
+    public class TicketsController : BaseController
     {
         private ITicketRepository repository;
         private IMirrorRepository mirRepository;
@@ -21,6 +22,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
             if (Guid.Empty == id)
@@ -46,7 +48,11 @@ namespace WebApi.Controllers
             if (ticket == null)
                 return BadRequest();
 
-            var mirror = new Mirror() { Id = ticket.MirrorId, Name = "Smart Mirror", User = HttpContext.User.Identity.Name };
+            var mirror = await mirRepository.GetById(ticket.MirrorId);
+            if (mirror != null) //already exists
+                return BadRequest();
+
+            mirror = new Mirror() { Id = ticket.MirrorId, Name = "Smart Mirror", User = UserEmail };
 
             await mirRepository.Add(mirror);
 
