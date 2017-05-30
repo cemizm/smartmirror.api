@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.DataLayer", "WebApi.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Test", "WebApi.Test\WebApi.Test.csproj", "{4835E9E9-CF3F-4626-8E8F-FB0365AFEBC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.DataLayer.MongoDB", "WebApi.DataLayer.MongoDB\WebApi.DataLayer.MongoDB.csproj", "{8B91F916-88B2-41C8-B49B-A6BE6F5D1D72}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EFC834C3-91B1-4044-80F5-64D21958B3DE}"
 	ProjectSection(SolutionItems) = preProject
 		README = README
@@ -30,5 +32,9 @@ Global
 		{4835E9E9-CF3F-4626-8E8F-FB0365AFEBC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4835E9E9-CF3F-4626-8E8F-FB0365AFEBC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4835E9E9-CF3F-4626-8E8F-FB0365AFEBC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B91F916-88B2-41C8-B49B-A6BE6F5D1D72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B91F916-88B2-41C8-B49B-A6BE6F5D1D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B91F916-88B2-41C8-B49B-A6BE6F5D1D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B91F916-88B2-41C8-B49B-A6BE6F5D1D72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

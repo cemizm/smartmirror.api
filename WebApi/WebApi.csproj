@@ -10,6 +10,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WebApi.DataLayer\WebApi.DataLayer.csproj" />
+		<ProjectReference Include="..\WebApi.DataLayer.MongoDB\WebApi.DataLayer.MongoDB.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Utils\" />
