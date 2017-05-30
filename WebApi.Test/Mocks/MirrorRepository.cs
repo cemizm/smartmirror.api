@@ -18,10 +18,10 @@ namespace WebApi.Test.Mocks
             db = new List<Mirror>();
 
             db.Add(new Mirror() { Id = TestId, User = "a@smart.mirror", Name = "TestName", Widgets = new List<Widget>() });
-            db.Add(new Mirror() { Id = new Guid(), User = "a@smart.mirror", Name = "", Widgets = new List<Widget>() });
-            db.Add(new Mirror() { Id = new Guid(), User = "a@smart.mirror", Name = "", Widgets = new List<Widget>() });
+            db.Add(new Mirror() { Id = Guid.NewGuid(), User = "a@smart.mirror", Name = "", Widgets = new List<Widget>() });
+            db.Add(new Mirror() { Id = Guid.NewGuid(), User = "a@smart.mirror", Name = "", Widgets = new List<Widget>() });
 
-            db.Add(new Mirror() { Id = new Guid(), User = "b@smart.mirror", Name = "", Widgets = new List<Widget>() });
+            db.Add(new Mirror() { Id = Guid.NewGuid(), User = "b@smart.mirror", Name = "", Widgets = new List<Widget>() });
         }
 
         public Task Add(Mirror mirror)
@@ -40,14 +40,14 @@ namespace WebApi.Test.Mocks
             });
         }
 
-        public Task<IEnumerable<Mirror>> GetAll(string user = null)
+        public Task<IEnumerable<Mirror>> GetAll(string user)
         {
             return Task.Run(() =>
             {
-                if (user == null)
-                    return (IEnumerable<Mirror>)db;
-
-                return db.FindAll(m => string.Compare(m.User, user) == 0);
+                if (string.IsNullOrEmpty(user))
+                    return new List<Mirror>();
+                
+                return (IEnumerable<Mirror>)db.FindAll(m => string.Compare(m.User, user) == 0);
             });
         }
 

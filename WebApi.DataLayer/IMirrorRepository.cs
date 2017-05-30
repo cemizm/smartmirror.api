@@ -7,7 +7,7 @@ namespace WebApi.DataLayer
 {
     public interface IMirrorRepository
     {
-        Task<IEnumerable<Mirror>> GetAll(string user = null);
+        Task<IEnumerable<Mirror>> GetAll(string user);
         Task<Mirror> GetById(Guid id);
         Task Update(Mirror mirror);
         Task Add(Mirror mirror);

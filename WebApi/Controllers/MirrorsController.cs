@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using WebApi.DataLayer;
 using WebApi.DataLayer.Models;
 
@@ -17,16 +19,19 @@ namespace WebApi.Controllers
 
 		// GET: api/mirrors
 		[HttpGet]
-        public IEnumerable<Mirror> Get()
+        public async Task<IActionResult> Get()
         {
-            return this.repository.GetAll("");
+            var mirrors = await this.repository.GetAll(HttpContext.User.Identity.Name);
+
+            return Ok(mirrors);
         }
 
-		// GET api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
+        // GET api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
 		[HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        [AllowAnonymous]
+        public async Task<IActionResult> Get(Guid id)
         {
-            Mirror mirror = this.repository.GetById("", id);
+            Mirror mirror = await this.repository.GetById(id);
 
             if (mirror == null)
                 return NotFound();
@@ -36,16 +41,16 @@ namespace WebApi.Controllers
 
 		// PUT api/mirrors
 		[HttpPut]
-        public void Put([FromBody]Mirror mirror)
+        public async Task Put([FromBody]Mirror mirror)
         {
-            this.repository.Update("", mirror);
+            await this.repository.Update(mirror);
         }
 
 		// DELETE api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
 		[HttpDelete("{id}")]
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            this.repository.Delete("", id);
+            await this.repository.Delete(id);
         }
     }
 }
