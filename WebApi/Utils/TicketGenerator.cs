@@ -5,7 +5,7 @@ namespace WebApi.Utils
     {
         public static string Generate()
         {
-            return new Guid().ToString().Replace("-", "").Remove(5);
+            return Guid.NewGuid().ToString().Replace("-", "").Remove(5);
         }
     }
 }

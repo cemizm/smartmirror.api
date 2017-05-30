@@ -29,10 +29,10 @@ namespace WebApi.DataLayer.MongoDB
             await context.Mirrors.DeleteOneAsync(filter);
         }
 
-        public async Task<IEnumerable<Mirror>> GetAll(string user = null)
+        public async Task<IEnumerable<Mirror>> GetAll(string user)
         {
-            return await context.Mirrors.Find(m => (string.IsNullOrEmpty(user) ||
-                                                    string.Compare(m.User, user, StringComparison.CurrentCultureIgnoreCase) == 0)).ToListAsync();
+            var filter = Builders<Mirror>.Filter.Eq(m => m.User, user);
+            return await context.Mirrors.Find(filter).ToListAsync();
         }
 
         public async Task<Mirror> GetById(Guid id)
