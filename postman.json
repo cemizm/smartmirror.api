@@ -1,0 +1,184 @@
+{
+	"variables": [],
+	"info": {
+		"name": "smartmirror.api",
+		"_postman_id": "5d6bd4fb-a0e8-6e42-6f24-37f89e77504a",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/api/auth",
+			"description": "",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"postman.setEnvironmentVariable(\"sm_token\", jsonData.accessToken);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/auth/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"User\": \"cem@basoglu.de\",\n\t\"Password\": \"098f6bcd4621d373cade4e832627b4f6\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/auth/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/mirrors",
+			"description": "",
+			"item": [
+				{
+					"name": "getAll",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/mirrors/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/mirrors/{38f5a067-9095-4c1b-82f8-7a3e6bc3a5a6}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/mirrors/{38f5a067-9095-4c1b-82f8-7a3e6bc3a5a6}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/mirrors/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"38f5a067-9095-4c1b-82f8-7a3e6bc3a5a6\",\n  \"user\": \"cem@basoglu.de\",\n  \"name\": \"Smart Mirror Test\",\n  \"image\": null,\n  \"widgets\": [{\"Type\": 1, \"Name\": \"test\", \"Side\": 2, \"Order\": 1}]\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/tickets",
+			"description": "",
+			"item": [
+				{
+					"name": "get",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/tickets/{38f5a067-9095-4c1b-82f8-7a3e6bc3a5a6}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/tickets/f8215",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{sm_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

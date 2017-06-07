@@ -23,10 +23,60 @@ dotnet run
 
 # API-Documentation
 
-REST API Base URL: http://url.will.follow/api
+REST API Base URL: [https://sm-webapi.azurewebsites.net/api](https://sm-webapi.azurewebsites.net/api)
+
+## Postman Examples
+The `postman.json` in the root directory of project can be imported into Postman to test the REST calls against the SmartMirror API. Please ensure to use the `POST login` action in the `/api/auth` folder of the collection, to create the JW-Token. The JWT will automatically written to the environment variables of postman and used to authenticate subsequent API calls.
 
 ## Authentication
 The application uses JWT to authenticate requests made to the REST API. The Token has to be passed in the `Authorization`-Header with `Bearer`-Scheme.
+
+## {Base URL}/auth
+
+### POST /
+Some API calls requires an authenticated user in order to fullfill the request. This method is used to create an JW-Token for the given username and password. The Password has to be MD5 hashed.
+
+#### Request
+Header: No Header required
+
+Body: 
+```
+{
+	"User": "cem@basoglu.de",
+	"Password": "098f6bcd4621d373cade4e832627b4f6"
+}
+```
+
+#### Response
+* Status 400: Bad Request (malformed request body)
+* Status 401: Unauthorized (invalid user, password)
+* Status 200: 
+```
+{
+  "user": "cem@basoglu.de",
+  "name": "Cem Basoglu",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkNlbSBCYXNvZ2x1IiwiZW1haWwiOiJjZW1AYmFzb2dsdS5kZSIsIm5iZiI6MTQ5NjgyMTMyMywiZXhwIjoxNDk2ODI0OTIzLCJpYXQiOjE0OTY4MjEzMjMsImlzcyI6IlNtYXJ0IE1pcnJvciIsImF1ZCI6IlNtYXJ0IE1pcnJvciBBdWRpZW5jZSJ9.P_oSjsA43t-nNncIeCWbe-fasoFFdy9gX0WScowt-mE"
+}
+```
+
+### GET /
+To verify that an given JWT is still valid, this API call can be used to get the current authenticated user.
+
+#### Request
+Header: Authorization: Bearer {token}
+
+Body: No Body required
+
+#### Response
+* Status 401: Unauthorized (no, invalid or expired token)
+* Status 200:
+```
+{
+  "name": "Cem Basoglu",
+  "email": "cem@basoglu.de",
+}
+```
+
 
 ## {Base URL}/tickets
 The Ticket Collection is used to register new mirrors. Every mirror has to be registered, before it can be used with Smart Mirror REST API. To register a new mirror, you have to create a registration ticket. The Number can than be used, to link the mirror with the users account.
