@@ -34,13 +34,22 @@ namespace WebApi
         {
             // Add framework services.
             services.AddMvc(config =>
-			{
+            {
                 //Enable global authorization
-	            var policy = new AuthorizationPolicyBuilder()
+                var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
-	            config.Filters.Add(new AuthorizeFilter(policy));
-	        });
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
+
+            // Add Cors policy
+            services.AddCors(options =>
+            {
+                options.AddPolicy("SMPolicy", builder => builder.AllowAnyOrigin()
+                                                                .AllowAnyMethod()
+							                                    .AllowAnyHeader()
+							                                    .AllowCredentials());
+            });
 
             // Add Configuration Settings
             services.Configure<DataLayer.MongoDB.Data.MongoSettings>(options => Configuration.GetSection("MongoConnection").Bind(options));
@@ -62,6 +71,7 @@ namespace WebApi
             Configuration.GetSection("TokenSettings").Bind(settings);
 
             app.UseTokenAuthentication(settings);
+            app.UseCors("SMPolicy");
 
             app.UseMvc();
         }
