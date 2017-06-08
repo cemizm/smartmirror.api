@@ -13,11 +13,12 @@ namespace WebApi.Test
     public class MirrorControllerTest
     {
         private MirrorsController controller;
+        private Mocks.MirrorRepository repository;
 
         public MirrorControllerTest()
         {
-
-            this.controller = new MirrorsController(new Mocks.MirrorRepository());
+            repository = new Mocks.MirrorRepository();
+            this.controller = new MirrorsController(repository);
             this.controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()
@@ -25,10 +26,10 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async void Should_Return3Items_When_UserA()
+        public async void Should_Return3Items_OnGet_WhenUserA()
         {
             this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
-                new Claim(ClaimTypes.Name, "a@smart.mirror")
+                new Claim(ClaimTypes.Email, "a@smart.mirror")
             }));
 
             IActionResult result = await this.controller.Get();
@@ -43,10 +44,10 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async void Should_Return1Item_When_UserB()
+        public async void Should_Return1Item_OnGet_WhenUserB()
 		{
 			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
-				new Claim(ClaimTypes.Name, "b@smart.mirror")
+                new Claim(ClaimTypes.Email, "b@smart.mirror")
 			}));
 
             IActionResult result = await this.controller.Get();
@@ -61,22 +62,15 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async void Should_Return0Items_When_UserUnknown()
+        public async void Should_ReturnUnauthorized_OnGet_WhenUserUnknown()
 		{
-
 			IActionResult result = await this.controller.Get();
 
-			Assert.IsType<OkObjectResult>(result);
-
-			var ok = result as OkObjectResult;
-			Assert.IsType<List<Mirror>>(ok.Value);
-			List<Mirror> mirrors = ok.Value as List<Mirror>;
-
-			Assert.Equal(0, mirrors.Count());
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
-        public async void Should_ReturnCorrectMirror_WhenRequestedById()
+        public async void Should_ReturnCorrectMirror_OnGet_WhenRequestedById()
         {
             IActionResult result = await this.controller.Get(Mocks.MirrorRepository.TestId);
 
@@ -86,14 +80,111 @@ namespace WebApi.Test
             Assert.IsType<OkObjectResult>(result);
             Assert.IsType<Mirror>(ok.Value);
             Assert.Equal(Mocks.MirrorRepository.TestId, m.Id);
-        }
+		}
 
-        [Fact]
-        public async void Should_ReturnNotFound_WhenEmptyMirrorId()
-        {
-            IActionResult result = await this.controller.Get(Guid.Empty);
+		[Fact]
+		public async void Should_ReturnBadRequest_OnGet_WhenEmptyMirrorId()
+		{
+			IActionResult result = await this.controller.Get(Guid.Empty);
 
-            Assert.IsType<NotFoundResult>(result);
-        }
+			Assert.IsType<BadRequestResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnNotFound_OnGet_WhenUnknownMirrorId()
+		{
+			IActionResult result = await this.controller.Get(Guid.NewGuid());
+
+			Assert.IsType<NotFoundResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnOK_OnUpdate_WhenAllConditionsMet()
+		{
+			var mirror = repository.GetById(Mocks.MirrorRepository.TestId).Result;
+            var copy = new Mirror()
+            {
+                Id = mirror.Id,
+                Name = "Updated Text",
+                User = mirror.User,
+                Image = mirror.Image,
+                Widgets = mirror.Widgets,
+            };
+
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "a@smart.mirror")
+			}));
+
+			IActionResult result = await this.controller.Put(copy);
+
+            mirror = repository.GetById(Mocks.MirrorRepository.TestId).Result;
+
+            Assert.IsType<OkResult>(result);
+            Assert.Equal(copy.Name, mirror.Name);
+		}
+
+		[Fact]
+		public async void Should_ReturnUnauthorized_OnUpdate_WhenNotOwnMirror()
+		{
+			var mirror = repository.GetById(Mocks.MirrorRepository.TestId).Result;
+
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "b@smart.mirror")
+			}));
+
+			IActionResult result = await this.controller.Put(mirror);
+
+			Assert.IsType<UnauthorizedResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnBadRequest_OnUpdate_WhenMirrorIdEmpty()
+		{
+            var mirror = new Mirror() { Id = Guid.Empty };
+
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "b@smart.mirror")
+			}));
+
+			IActionResult result = await this.controller.Put(mirror);
+
+            Assert.IsType<BadRequestResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnNotFound_OnDelete_WhenMirrorIdEmpty()
+		{
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "b@smart.mirror")
+			}));
+
+			IActionResult result = await this.controller.Delete(Guid.Empty);
+
+			Assert.IsType<NotFoundResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnBadRequest_OnDelete_WhenNotOwnMirror()
+		{
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "b@smart.mirror")
+			}));
+
+            IActionResult result = await this.controller.Delete(Mocks.MirrorRepository.TestId);
+
+            Assert.IsType<UnauthorizedResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnOk_OnDelete_WhenAllConditionMet()
+		{
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "a@smart.mirror")
+			}));
+
+			IActionResult result = await this.controller.Delete(Mocks.MirrorRepository.TestId);
+
+            Assert.IsType<OkResult>(result);
+		}
     }
 }

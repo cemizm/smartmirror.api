@@ -73,6 +73,18 @@ namespace WebApi.Test
 		{
 			IActionResult result = await this.controller.Post("asdasd");
 
+			Assert.IsType<BadRequestResult>(result);
+		}
+
+		[Fact]
+		public async void Should_ReturnBadRequest_When_MirrorExists()
+		{
+			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+				new Claim(ClaimTypes.Email, "a@smart.mirror")
+			}));
+
+            IActionResult result = await this.controller.Post(Mocks.TicketRepository.TestDupNumber);
+
             Assert.IsType<BadRequestResult>(result);
 		}
 
@@ -80,7 +92,7 @@ namespace WebApi.Test
 		public async void Should_AddNewMirror_When_CorrectTicketNumber()
 		{
 			this.controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
-				new Claim(ClaimTypes.Name, "a@smart.mirror")
+				new Claim(ClaimTypes.Email, "a@smart.mirror")
 			}));
 
             IActionResult result = await this.controller.Post(Mocks.TicketRepository.TestNumber);
