@@ -33,16 +33,19 @@ namespace WebApi.Controllers
             if (user == null)
                 return Unauthorized();
 
-            return Ok(user);
+            return Ok(new UserBase(user));
         }
 
         // POST api/auth
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Post([FromBody]LoginRequest req)
+        public async Task<IActionResult> Login([FromBody]LoginRequest req)
         {
             if (req == null)
-                return BadRequest();
+				return BadRequest();
+
+			if (!ModelState.IsValid)
+				return BadRequest();
 
             var user = await repository.GetByEmailPassword(req.User, req.Password);
             if (user == null)
@@ -50,16 +53,59 @@ namespace WebApi.Controllers
 
             string token = manager.CreateJwtToken(user.Name, user.Email);
 
-            LoginResponse response = new LoginResponse(){
+            LoginResponse response = new LoginResponse(user)
+            {
                 AccessToken = token,
-                User = user.Email,
-                Name = user.Name
             };
 
             return Ok(response);
         }
 
+        // POST api/auth
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody]RegisterRequest req)
+        {
+            if (req == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await repository.GetByEmail(req.Email);
+            if (user != null)
+                return BadRequest();
+
+            user = new DataLayer.Models.User();
+            user.Email = req.Email;
+            user.Name = req.Name;
+            user.Password = req.Password;
+
+            await repository.Add(user);
+
+            return Ok();
+        }
+
         #region Nested Types
+
+        public class UserBase
+        {
+            public UserBase(DataLayer.Models.User user)
+            {
+                this.User = user.Email;
+                this.Name = user.Name;
+            }
+            /// <summary>
+            /// Email of User
+            /// </summary>
+            public string User { get; private set; }
+
+            /// <summary>
+            /// Name of User
+            /// </summary>
+            public string Name { get; private set; }
+
+        }
 
         public class LoginRequest
         {
@@ -76,17 +122,24 @@ namespace WebApi.Controllers
             public string Password { get; set; }
         }
 
-        public class LoginResponse
+        public class RegisterRequest
         {
-            /// <summary>
-            /// Email of User
-            /// </summary>
-            public string User { get; set; }
+            [Required]
+            public string Email { get; set; }
 
-            /// <summary>
-            /// Name of User
-            /// </summary>
+            [Required]
             public string Name { get; set; }
+
+            [Required]
+            public string Password { get; set; }
+        }
+
+        public class LoginResponse : UserBase
+        {
+            public LoginResponse(DataLayer.Models.User user) : base(user)
+            {
+
+            }
 
             /// <summary>
             /// User AccessToken 

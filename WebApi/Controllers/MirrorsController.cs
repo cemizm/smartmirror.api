@@ -13,21 +13,25 @@ namespace WebApi.Controllers
     {
         private IMirrorRepository repository;
 
-        public MirrorsController(IMirrorRepository repository){
+        public MirrorsController(IMirrorRepository repository)
+        {
             this.repository = repository;
         }
 
-		// GET: api/mirrors
-		[HttpGet]
+        // GET: api/mirrors
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
+            if (string.IsNullOrEmpty(UserEmail))
+                return Unauthorized();
+
             var mirrors = await this.repository.GetAll(UserEmail);
 
             return Ok(mirrors);
         }
 
         // GET api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
-		[HttpGet("{id}")]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -41,36 +45,36 @@ namespace WebApi.Controllers
             return Ok(mirror);
         }
 
-		// PUT api/mirrors
-		[HttpPut]
+        // PUT api/mirrors
+        [HttpPut]
         public async Task<IActionResult> Put([FromBody]Mirror mirror)
-		{
+        {
             if (mirror.Id == Guid.Empty)
                 return BadRequest();
 
             Mirror existing = await this.repository.GetById(mirror.Id);
-			if (mirror == null)
-				return NotFound();
+            if (mirror == null)
+                return NotFound();
 
-			if (string.Compare(existing.User, UserEmail, StringComparison.CurrentCultureIgnoreCase) != 0)
-				return Unauthorized();
+            if (existing.User != UserEmail.ToLower())
+                return Unauthorized();
 
             mirror.User = UserEmail;
 
-			await this.repository.Update(mirror);
+            await this.repository.Update(mirror);
 
             return Ok();
         }
 
-		// DELETE api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
-		[HttpDelete("{id}")]
+        // DELETE api/mirrors/{936DA01F-9ABD-4D9D-80C7-02AF85C822A8}
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
-		{
-			Mirror mirror = await this.repository.GetById(id);
-			if (mirror == null)
-				return NotFound();
+        {
+            Mirror mirror = await this.repository.GetById(id);
+            if (mirror == null)
+                return NotFound();
 
-            if (string.Compare(mirror.User, UserEmail, StringComparison.CurrentCultureIgnoreCase) != 0)
+            if (mirror.User != UserEmail.ToLower())
                 return Unauthorized();
 
             await this.repository.Delete(id);

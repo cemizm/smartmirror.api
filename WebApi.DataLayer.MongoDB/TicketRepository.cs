@@ -18,18 +18,20 @@ namespace WebApi.DataLayer.MongoDB
 
         public async Task Add(Ticket ticket)
         {
+            ticket.Number = ticket.Number.ToUpper();
+
             await context.Tickets.InsertOneAsync(ticket);
         }
 
         public async Task Delete(string number)
         {
-            var filter = Builders<Ticket>.Filter.Eq(t => t.Number, number);
+            var filter = Builders<Ticket>.Filter.Eq(t => t.Number, number.ToUpper());
             await context.Tickets.DeleteOneAsync(filter);
         }
 
         public async Task<Ticket> GetTicket(string number)
         {
-            var filter = Builders<Ticket>.Filter.Eq(t => t.Number, number);
+            var filter = Builders<Ticket>.Filter.Eq(t => t.Number, number.ToUpper());
             return await context.Tickets.Find(filter).FirstOrDefaultAsync();
         }
 

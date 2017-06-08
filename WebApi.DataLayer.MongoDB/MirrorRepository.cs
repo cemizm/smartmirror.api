@@ -19,6 +19,7 @@ namespace WebApi.DataLayer.MongoDB
 
         public async Task Add(Mirror mirror)
         {
+            mirror.User = mirror.User.ToLower();
             await context.Mirrors.InsertOneAsync(mirror);
         }
 
@@ -31,7 +32,7 @@ namespace WebApi.DataLayer.MongoDB
 
         public async Task<IEnumerable<Mirror>> GetAll(string user)
         {
-            var filter = Builders<Mirror>.Filter.Eq(m => m.User, user);
+            var filter = Builders<Mirror>.Filter.Eq(m => m.User, user.ToLower());
             return await context.Mirrors.Find(filter).ToListAsync();
         }
 

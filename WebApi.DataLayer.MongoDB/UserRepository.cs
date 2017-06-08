@@ -19,12 +19,15 @@ namespace WebApi.DataLayer.MongoDB
 
         public async Task Add(User user)
         {
+            user.Email = user.Email.ToLower();
+            user.Name = user.Name.ToLower();
+
             await context.Users.InsertOneAsync(user);
         }
 
         public async Task Delete(string email)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+            var filter = Builders<User>.Filter.Eq(u => u.Email, email.ToLower());
             await context.Users.DeleteOneAsync(filter);
         }
 
@@ -35,19 +38,19 @@ namespace WebApi.DataLayer.MongoDB
 
         public async Task<User> GetByEmail(string email)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+            var filter = Builders<User>.Filter.Eq(u => u.Email, email.ToLower());
             return await context.Users.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<User> GetByEmailPassword(string email, string password)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Email, email) & Builders<User>.Filter.Eq(u => u.Password, password);
+            var filter = Builders<User>.Filter.Eq(u => u.Email, email.ToLower()) & Builders<User>.Filter.Eq(u => u.Password, password.ToLower());
             return await context.Users.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task Update(User user)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Email, user.Email);
+            var filter = Builders<User>.Filter.Eq(u => u.Email, user.Email.ToLower());
             await context.Users.FindOneAndReplaceAsync(filter, user);
         }
     }
