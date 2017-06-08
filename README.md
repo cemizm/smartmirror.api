@@ -33,6 +33,25 @@ The application uses JWT to authenticate requests made to the REST API. The Toke
 
 ## {Base URL}/auth
 
+### POST /register
+Registers a new User. The Password has to be MD5 hashed.
+
+#### Request
+Header: No Header required
+
+Body: 
+```
+{
+    "Email": "cem@basoglu.de",
+    "Name": "Cem Basoglu",
+    "Password": "098f6bcd4621d373cade4e832627b4f6"
+}
+```
+
+#### Response
+* Status 400: Bad Request (malformed request body, email in use)
+* Status 200: Ok
+
 ### POST /
 Some API calls requires an authenticated user in order to fullfill the request. This method is used to create an JW-Token for the given username and password. The Password has to be MD5 hashed.
 
