@@ -46,6 +46,40 @@
 					"response": []
 				},
 				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"postman.setEnvironmentVariable(\"sm_token\", jsonData.accessToken);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://sm-webapi.azurewebsites.net/api/auth/register",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Email\": \"cem@basoglu.de\",\n\t\"Name\": \"Cem Basoglu\",\n\t\"Password\": \"098f6bcd4621d373cade4e832627b4f6\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "get",
 					"request": {
 						"url": "https://sm-webapi.azurewebsites.net/api/auth/",
