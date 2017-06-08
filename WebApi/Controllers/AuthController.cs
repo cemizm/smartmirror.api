@@ -28,8 +28,10 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var user = await repository.GetByEmail(UserEmail);
+            if (UserEmail == null)
+                return Unauthorized();
 
+            var user = await repository.GetByEmail(UserEmail);
             if (user == null)
                 return Unauthorized();
 
