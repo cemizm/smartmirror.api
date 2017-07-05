@@ -68,7 +68,7 @@ namespace WebApi.Controllers
                 Image = images[new Random().Next(0, images.Length - 1)],
                 Widgets = new List<Widget>(new Widget[]{
                     new Widget() { Name = "News", Order = 0, Side= WidgetSide.Left, Type= WidgetType.News, Setting = new Dictionary<string, object>() { { "maxCount", 3 }, { "feedUrl", "http://www.tagesschau.de/xml/rss2" } }},
-                    new Widget() { Name = "Mail", Order = 1, Side= WidgetSide.Left, Type= WidgetType.Mail, Setting = new Dictionary<string, object>() { { "maxCount", 3 }, { "oAuthToken", null } }},
+                    new Widget() { Name = "Mail", Order = 1, Side= WidgetSide.Left, Type= WidgetType.Mail, Setting = new Dictionary<string, object>() { { "maxCount", 3 }, { "unread", false }, { "oAuthToken", null } }},
                     new Widget() { Name = "Wetter", Order = 0, Side= WidgetSide.Right, Type= WidgetType.Weather, Setting = new Dictionary<string, object>() { {"city", "Bielefeld"}}},
                     new Widget() { Name = "Task", Order = 1, Side= WidgetSide.Right, Type= WidgetType.Task, Setting = new Dictionary<string, object>() { {"maxCount", 3 }, { "oAuthToken", null } }},
                     new Widget() { Name = "Calendar", Order = 2, Side= WidgetSide.Right, Type= WidgetType.Calendar, Setting = new Dictionary<string, object>() { {"maxCount", 3}, { "oAuthToken", null } }}
