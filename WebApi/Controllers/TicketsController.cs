@@ -68,7 +68,7 @@ namespace WebApi.Controllers
                 User = UserEmail,
                 Image = images[new Random().Next(0, images.Length - 1)],
                 Widgets = new List<Widget>(new Widget[]{
-                    new Widget() { Name = "News", Order = 0, Side= WidgetSide.Left, Type= WidgetType.News, Setting = new NewsSetting() { MaxCount=3, FeedUrl=""}},
+                    new Widget() { Name = "News", Order = 0, Side= WidgetSide.Left, Type= WidgetType.News, Setting = new NewsSetting() { MaxCount=3, FeedUrl="http://www.tagesschau.de/xml/rss2"}},
                     new Widget() { Name = "Mail", Order = 1, Side= WidgetSide.Left, Type= WidgetType.Mail, Setting = new MailSettings() { MaxCount=3 }},
                     new Widget() { Name = "Wetter", Order = 0, Side= WidgetSide.Right, Type= WidgetType.Weather, Setting = new WeatherSetting() { City="Bielefeld"}},
                     new Widget() { Name = "Task", Order = 1, Side= WidgetSide.Right, Type= WidgetType.Task, Setting = new TaskSetting() { MaxCount=3 }},
