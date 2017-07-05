@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace WebApi.DataLayer.Models
 {
     public class Widget
@@ -29,6 +31,6 @@ namespace WebApi.DataLayer.Models
         /// <summary>
         /// Settings of the Widget
         /// </summary>
-        public IWidgetSettings Setting { get; set; }
+        public Dictionary<string, object> Setting { get; set; }
     }
 }
