@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RuntimeFrameworkVersion>2.0.0-preview2-final</RuntimeFrameworkVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<Folder Include="Models\" />
+	</ItemGroup>
 </Project>

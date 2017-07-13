@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,12 +52,20 @@ namespace WebApi
 							                                    .AllowCredentials());
             });
 
+
             // Add Configuration Settings
             services.Configure<DataLayer.MongoDB.Data.MongoSettings>(options => Configuration.GetSection("MongoConnection").Bind(options));
             services.Configure<Utils.TokenSettings>(options => Configuration.GetSection("TokenSettings").Bind(options));
 
-            // Add Dependencies
-            services.AddTransient<IMirrorRepository, DataLayer.MongoDB.MirrorRepository>();
+
+			TokenSettings settings = new TokenSettings();
+			Configuration.GetSection("TokenSettings").Bind(settings);
+
+			services.AddTokenAuthentication(settings);
+
+
+			// Add Dependencies
+			services.AddTransient<IMirrorRepository, DataLayer.MongoDB.MirrorRepository>();
             services.AddTransient<ITicketRepository, DataLayer.MongoDB.TicketRepository>();
             services.AddTransient<IUserRepository, DataLayer.MongoDB.UserRepository>();
         }
@@ -70,8 +79,9 @@ namespace WebApi
             TokenSettings settings = new TokenSettings();
             Configuration.GetSection("TokenSettings").Bind(settings);
 
-            app.UseTokenAuthentication(settings);
             app.UseCors("SMPolicy");
+
+			app.UseAuthentication();
 
             app.UseMvc();
         }

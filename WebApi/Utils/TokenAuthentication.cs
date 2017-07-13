@@ -1,21 +1,29 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApi.Utils
 {
     public static class TokenAuthentication
     {
 
-        public static void UseTokenAuthentication(this IApplicationBuilder app, TokenSettings settings)
+        public static void AddTokenAuthentication(this IServiceCollection services, TokenSettings settings)
         {
             TokenManager mngr = new TokenManager(settings);
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            services.AddAuthentication(options =>
             {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            });
+
+            services.AddJwtBearerAuthentication(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters()
+                {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = mngr.GetSecurityKey(),
 
@@ -28,8 +36,9 @@ namespace WebApi.Utils
                     ValidateLifetime = true,
 
                     ClockSkew = TimeSpan.Zero
-                },
+                };
             });
+
         }
     }
 }
