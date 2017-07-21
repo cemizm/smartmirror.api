@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.DataLayer;
 using WebApi.DataLayer.Models;
+using WebApi.Utils;
 
 namespace WebApi.Controllers
 {
@@ -22,11 +23,13 @@ namespace WebApi.Controllers
 
         private ITicketRepository repository;
         private IMirrorRepository mirRepository;
+        private SocketPublisher socket;
 
-        public TicketsController(ITicketRepository repository, IMirrorRepository mirRepository)
+        public TicketsController(ITicketRepository repository, IMirrorRepository mirRepository, SocketPublisher socket)
         {
             this.repository = repository;
             this.mirRepository = mirRepository;
+            this.socket = socket;
         }
 
         [HttpGet("{id}")]
@@ -76,6 +79,9 @@ namespace WebApi.Controllers
             };
 
             await mirRepository.Add(mirror);
+
+
+            this.socket.UpdateMirror(mirror);
 
             return Ok(mirror);
         }

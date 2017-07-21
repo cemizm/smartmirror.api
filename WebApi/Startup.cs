@@ -53,9 +53,12 @@ namespace WebApi
             });
 
 
-            // Add Configuration Settings
-            services.Configure<DataLayer.MongoDB.Data.MongoSettings>(options => Configuration.GetSection("MongoConnection").Bind(options));
-            services.Configure<Utils.TokenSettings>(options => Configuration.GetSection("TokenSettings").Bind(options));
+			// Add Configuration Settings
+			services.Configure<DataLayer.MongoDB.Data.MongoSettings>(options => Configuration.GetSection("MongoConnection").Bind(options));
+			services.Configure<Utils.TokenSettings>(options => Configuration.GetSection("TokenSettings").Bind(options));
+            services.Configure<Utils.SocketSettings>(options => Configuration.GetSection("SocketSettings").Bind(options));
+
+            services.AddSingleton<SocketPublisher>();
 
 
 			TokenSettings settings = new TokenSettings();
@@ -76,8 +79,6 @@ namespace WebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            TokenSettings settings = new TokenSettings();
-            Configuration.GetSection("TokenSettings").Bind(settings);
 
             app.UseCors("SMPolicy");
 

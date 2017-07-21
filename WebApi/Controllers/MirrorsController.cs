@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using WebApi.DataLayer;
 using WebApi.DataLayer.Models;
+using WebApi.Utils;
 
 namespace WebApi.Controllers
 {
@@ -12,10 +13,12 @@ namespace WebApi.Controllers
     public class MirrorsController : BaseController
     {
         private IMirrorRepository repository;
+        private SocketPublisher socket;
 
-        public MirrorsController(IMirrorRepository repository)
+        public MirrorsController(IMirrorRepository repository, SocketPublisher socket)
         {
             this.repository = repository;
+            this.socket = socket;
         }
 
         // GET: api/mirrors
@@ -62,6 +65,8 @@ namespace WebApi.Controllers
             mirror.User = UserEmail;
 
             await this.repository.Update(mirror);
+
+			this.socket.UpdateMirror(mirror);
 
             return Ok();
         }
