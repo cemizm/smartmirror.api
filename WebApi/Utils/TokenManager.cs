@@ -28,9 +28,9 @@ namespace WebApi.Utils
         public SigningCredentials GetCredentials()
         {
             return new SigningCredentials(GetSecurityKey(), SecurityAlgorithms.HmacSha256);
-        }
+		}
 
-        public string CreateJwtToken(string name, string email)
+        public string CreateJwtToken(string name, string email, DateTime? expires = null)
         {
             Claim[] claims = new Claim[]
             {
@@ -44,12 +44,17 @@ namespace WebApi.Utils
                 Issuer = this.settings.Issuer,
                 Audience = this.settings.Audience,
                 IssuedAt = DateTime.UtcNow,
-                SigningCredentials = GetCredentials()
+                SigningCredentials = GetCredentials(),
+                Expires = expires
             };
 
             var token = handler.CreateToken(descriptor);
 
             return handler.WriteToken(token);
+        }
+
+        public JwtSecurityToken GetToken(string token){
+            return handler.ReadToken(token) as JwtSecurityToken;
         }
     }
 }

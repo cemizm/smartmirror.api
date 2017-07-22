@@ -61,32 +61,67 @@ namespace WebApi.Controllers
             };
 
             return Ok(response);
-        }
+		}
 
-        // POST api/auth
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterRequest req)
-        {
-            if (req == null)
-                return BadRequest();
+		// POST api/auth
+		[HttpPost("register")]
+		[AllowAnonymous]
+		public async Task<IActionResult> Register([FromBody]RegisterRequest req)
+		{
+			if (req == null)
+				return BadRequest();
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+			if (!ModelState.IsValid)
+				return BadRequest();
 
-            var user = await repository.GetByEmail(req.Email);
-            if (user != null)
-                return BadRequest();
+			var user = await repository.GetByEmail(req.Email);
+			if (user != null)
+				return BadRequest();
 
-            user = new DataLayer.Models.User();
-            user.Email = req.Email;
-            user.Name = req.Name;
-            user.Password = req.Password;
+			user = new DataLayer.Models.User();
+			user.Email = req.Email;
+			user.Name = req.Name;
+			user.Password = req.Password;
 
-            await repository.Add(user);
+			await repository.Add(user);
 
-            return Ok();
-        }
+			return Ok();
+		}
+
+		// POST api/auth
+		[HttpPost("token")]
+		[AllowAnonymous]
+        public async Task<IActionResult> Token([FromForm]TokenRequest req)
+		{
+			if (req == null)
+				return BadRequest();
+
+			if (!ModelState.IsValid)
+				return BadRequest();
+
+            var token = manager.GetToken(req.code);
+            var email = token.Claims.Where(c => c.Type == "email").Select(c => c.Value).FirstOrDefault();
+
+			if (email == null)
+				return Unauthorized();
+
+			var user = await repository.GetByEmail(email);
+			if (user == null)
+				return Unauthorized();
+            
+            string jwt = manager.CreateJwtToken(user.Name, user.Email,DateTime.Now.AddDays(180));
+
+            var res = new AccessTokenResponse()
+            {
+                access_token = jwt,
+                expires_in = 60 * 60 * 24 * 180,
+                refresh_token = null,
+                token_type = "bearer"
+            };
+
+
+			return Ok(res);
+		}
 
         #region Nested Types
 
@@ -148,6 +183,19 @@ namespace WebApi.Controllers
             /// </summary>
             public string AccessToken { get; set; }
 
+        }
+
+        public class TokenRequest {
+            [Required]
+            public string code { get; set; }
+        }
+
+		public class AccessTokenResponse
+		{
+			public string access_token { get; set; }
+			public string token_type { get; set; }
+			public int expires_in { get; set; }
+            public string refresh_token { get; set; }
         }
 
         #endregion
