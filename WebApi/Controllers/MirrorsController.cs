@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using WebApi.DataLayer;
 using WebApi.DataLayer.Models;
 using WebApi.Utils;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Controllers
 {
@@ -66,7 +67,7 @@ namespace WebApi.Controllers
 
             await this.repository.Update(mirror);
 
-			this.socket.UpdateMirror(mirror);
+            this.socket.UpdateMirror(mirror);
 
             return Ok();
         }
@@ -86,5 +87,52 @@ namespace WebApi.Controllers
 
             return Ok();
         }
+
+        [HttpPost("control")]
+        public async Task<IActionResult> control([FromBody]ControlRequest req)
+		{
+			if (req == null)
+				return BadRequest();
+
+			if (!ModelState.IsValid)
+				return BadRequest();
+
+            Mirror mirror = await this.repository.GetById(req.Id);
+			if (mirror == null)
+				return NotFound();
+
+			if (mirror.User != UserEmail.ToLower())
+				return Unauthorized();
+
+            this.socket.ControlMirror(mirror.Id, req.Action, req.Payload);
+
+            return Ok();
+        }
+
+        #region Nested Types
+
+        public class ControlRequest
+        {
+            /// <summary>
+            /// Id of Mirror to control
+            /// </summary>
+            [Required]
+            public Guid Id { get; set; }
+
+            /// <summary>
+            /// Action to execute
+            /// </summary>
+            [Required]
+            public string Action { get; set; }
+
+            /// <summary>
+            /// Gets or sets the payload.
+            /// </summary>
+            /// <value>The payload.</value>
+            public Dictionary<string, string> Payload { get; set; }
+
+        }
+
+        #endregion
     }
 }

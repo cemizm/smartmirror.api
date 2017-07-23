@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,6 +24,17 @@ namespace WebApi.Utils
             this.Publish("update", mirror);
         }
 
+        public void ControlMirror(Guid mirrorId, string action, Dictionary<string, string> payload){
+            ControlRequest req = new ControlRequest()
+            {
+                MirrorId = mirrorId,
+                Action = action,
+                Payload = payload
+            };
+
+            this.Publish("action", req);
+        }
+
         public void Publish<T>(string eventString, T data){
 			var serializer = new JsonSerializer()
 			{
@@ -36,6 +48,30 @@ namespace WebApi.Utils
 
             socket.Emit(eventString, jobj);
 
-        }
-    }
+		}
+
+		#region Nested Types
+
+		public class ControlRequest
+		{
+			/// <summary>
+			/// Id of Mirror to control
+			/// </summary>
+			public Guid MirrorId { get; set; }
+
+			/// <summary>
+			/// Action to execute
+			/// </summary>
+			public string Action { get; set; }
+
+			/// <summary>
+			/// Gets or sets the payload.
+			/// </summary>
+			/// <value>The payload.</value>
+			public Dictionary<string, string> Payload { get; set; }
+
+		}
+
+		#endregion
+	}
 }
