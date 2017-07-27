@@ -9,6 +9,9 @@
 		<PackageReference Include="xunit" Version="2.3.0-beta3-build3705" />
 	</ItemGroup>
 	<ItemGroup>
+        <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-beta3-build3705" />
+	</ItemGroup>
+	<ItemGroup>
 		<Folder Include="Mocks\" />
 	</ItemGroup>
 	<ItemGroup>

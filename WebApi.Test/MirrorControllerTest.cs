@@ -18,7 +18,7 @@ namespace WebApi.Test
         public MirrorControllerTest()
         {
             repository = new Mocks.MirrorRepository();
-            this.controller = new MirrorsController(repository);
+            this.controller = new MirrorsController(repository, new DummySocket());
             this.controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()

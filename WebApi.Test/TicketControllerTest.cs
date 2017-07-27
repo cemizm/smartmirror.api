@@ -17,7 +17,7 @@ namespace WebApi.Test
 		public TicketControllerTest()
 		{
             this.mirRep = new Mocks.MirrorRepository();
-            this.controller = new TicketsController(new Mocks.TicketRepository(), mirRep);
+            this.controller = new TicketsController(new Mocks.TicketRepository(), mirRep, new DummySocket());
 			this.controller.ControllerContext = new ControllerContext()
 			{
 				HttpContext = new DefaultHttpContext()

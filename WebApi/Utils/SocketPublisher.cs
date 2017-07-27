@@ -20,11 +20,11 @@ namespace WebApi.Utils
             this.settings = options.Value;
         }
 
-        public void UpdateMirror(Mirror mirror){
+        public virtual void UpdateMirror(Mirror mirror){
             this.Publish("update", mirror);
         }
 
-        public void ControlMirror(Guid mirrorId, string action, Dictionary<string, string> payload){
+        public virtual void ControlMirror(Guid mirrorId, string action, Dictionary<string, string> payload){
             ControlRequest req = new ControlRequest()
             {
                 MirrorId = mirrorId,
